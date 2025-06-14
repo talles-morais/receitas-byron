@@ -1,3 +1,4 @@
+import RecipeCard from "@/components/RecipeCard"
 import { recipes } from "@/lib/data"
 
 export default function ReceitasPage() {
@@ -7,11 +8,9 @@ export default function ReceitasPage() {
         <h1 className="text-3xl font-bold">Todas as receitas</h1>
 
         {/* cards */}
-        <div>
+        <div className="grid grid-cols-3 gap-8">
           {recipes.map((recipe) => (
-            <div>
-              {/* card da receita */}
-            </div>
+            <RecipeCard />
           ))}
         </div>
       </div>
