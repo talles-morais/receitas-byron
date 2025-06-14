@@ -10,7 +10,7 @@ export default function ReceitasPage() {
         {/* cards */}
         <div className="grid grid-cols-3 gap-8">
           {recipes.map((recipe) => (
-            <RecipeCard />
+            <RecipeCard key={recipe.id} recipe={recipe}/>
           ))}
         </div>
       </div>
