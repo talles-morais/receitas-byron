@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function RecipeCard() {
   return (
     <Link href={""}>
-      <div>
+      <div className="border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
         <div className="relative h-48 w-full">
           <Image 
             src="/receitas/bolo-chocolate.png"
@@ -13,8 +13,8 @@ export default function RecipeCard() {
           />
         </div>
 
-        <div>
-          <h3>Nome da receita</h3>
+        <div className="p-4">
+          <h3 className="text-lg font-bold">Nome da receita</h3>
           <p>Descrição da receita</p>
         </div>
       </div>
