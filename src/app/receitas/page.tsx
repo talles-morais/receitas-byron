@@ -3,20 +3,34 @@
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import RecipeCard from "@/components/RecipeCard";
 import RecipeFormModal from "@/components/RecipeFormModal";
-import { recipes as initialRecipes } from "@/lib/data";
+import api from "@/lib/api";
 import type { Recipe } from "@/lib/data";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ReceitasPage() {
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
   const [isDeleteConfirmationModalOpen, setIsDeleteConfirmationModalOpen] =
     useState(false);
-  const [recipes, setRecipes] = useState<Recipe[]>(initialRecipes);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | undefined>(
     undefined
   );
+
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        const response = await api.get("/recipes")
+
+        setRecipes(response.data)
+      } catch (error) {
+        console.error("Erro ao requisitar as receitas", error)
+      }
+    }
+
+    fetchRecipes();
+  }, [])
 
   const handleOpenCreateModal = () => {
     setModalMode("create");
