@@ -21,16 +21,16 @@ export default function ReceitasPage() {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await api.get("/recipes")
+        const response = await api.get("/recipes");
 
-        setRecipes(response.data)
+        setRecipes(response.data);
       } catch (error) {
-        console.error("Erro ao requisitar as receitas", error)
+        console.error("Erro ao requisitar as receitas", error);
       }
-    }
+    };
 
     fetchRecipes();
-  }, [])
+  }, []);
 
   const handleOpenCreateModal = () => {
     setModalMode("create");
@@ -48,23 +48,23 @@ export default function ReceitasPage() {
     setIsRecipeModalOpen(false);
   };
 
-  const handleSaveRecipe = (recipeData: Omit<Recipe, "id"> | Recipe) => {
-    if (modalMode === "create") {
-      const newRecipe: Recipe = {
-        ...recipeData,
-        id: (recipes.length + 1).toString(),
-      };
-      setRecipes((prev) => [...prev, newRecipe]);
-    } else {
-      // modo "edit"
-      const updatedRecipe = recipeData as Recipe;
-      setRecipes((prev) =>
-        prev.map((recipe) =>
-          recipe.id === updatedRecipe.id ? updatedRecipe : recipe
-        )
-      );
-    }
-    handleCloseModal();
+  const handleSaveRecipe = async (recipeData: Omit<Recipe, "id"> | Recipe) => {
+    try {
+      if (modalMode === "create") {
+        const response = await api.post("/recipes", recipeData)
+        const newRecipe = response.data;
+        setRecipes((prev) => [...prev, newRecipe])
+      } else {
+        // modo "edit"
+        const updatedRecipe = recipeData as Recipe;
+        setRecipes((prev) =>
+          prev.map((recipe) =>
+            recipe.id === updatedRecipe.id ? updatedRecipe : recipe
+          )
+        );
+      }
+      handleCloseModal();
+    } catch (error) {}
   };
 
   const handleOpenDeleteConfirmationModal = (recipe: Recipe) => {
