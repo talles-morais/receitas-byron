@@ -1,28 +1,64 @@
+"use client";
+
 import InfoPill from "@/components/InfoPill";
 import PreparationStep from "@/components/PreparationStep";
-import { recipes } from "@/lib/data";
+import api from "@/lib/api";
+import { Recipe } from "@/lib/data";
 import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { use, useEffect, useState } from "react";
 
 interface RecipePageProps {
   params: {
     id: string;
-  }
+  };
 }
 
 export default function ReceitaPage({ params }: RecipePageProps) {
-  const recipe = recipes.find((recipe) => recipe.id === params.id)
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRecipe = async () => {
+      try {
+        const response = await api.get(`/recipes/${params.id}`);
+
+        setRecipe(response.data);
+      } catch (error) {
+        console.error("Erro ao requisitar receita", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecipe();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="flex-grow py-8">
+        <div className="container mx-auto">
+          <div className="flex justify-center">
+            <p>Carregando receita...</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   if (!recipe) {
-    return notFound()
+    return notFound();
   }
 
   return (
     <main className="flex-grow py-8">
       <div className="container mx-auto">
-        <Link className="flex text-orange-500 hover:text-orange-700 mb-6" href="/receitas">
+        <Link
+          className="flex text-orange-500 hover:text-orange-700 mb-6"
+          href="/receitas"
+        >
           <ChevronLeft />
           Voltar para receitas
         </Link>
@@ -61,7 +97,12 @@ export default function ReceitaPage({ params }: RecipePageProps) {
                 <h2 className="text-xl font-bold mb-4">Ingredientes</h2>
                 <ul className="list-disc list-inside space-y-2">
                   {recipe.ingredients.map((ingredient) => (
-                    <li key={ingredient} className="marker:text-orange-500">{ingredient}</li>
+                    <li
+                      key={ingredient.value}
+                      className="marker:text-orange-500"
+                    >
+                      {ingredient.value}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -71,7 +112,11 @@ export default function ReceitaPage({ params }: RecipePageProps) {
                 <h2 className="text-xl font-bold mb-4">Modo de Preparo</h2>
                 <ol className="space-y-4">
                   {recipe.instructions.map((instruction, index) => (
-                    <PreparationStep key={instruction} index={index + 1} description={instruction} />
+                    <PreparationStep
+                      key={instruction.value}
+                      index={index + 1}
+                      description={instruction.value}
+                    />
                   ))}
                 </ol>
               </div>
@@ -80,5 +125,5 @@ export default function ReceitaPage({ params }: RecipePageProps) {
         </section>
       </div>
     </main>
-  )
+  );
 }
