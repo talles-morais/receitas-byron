@@ -1,10 +1,30 @@
+"use client"
+
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { recipes } from "@/lib/data";
 import RecipeCard from "@/components/RecipeCard";
+import { useEffect, useState } from "react";
+import { Recipe } from "@/lib/data";
+import api from "@/lib/api";
+import { toast } from "sonner";
 
 export default function Home() {
-  const featuredRecipes = recipes.slice(0, 3);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        const response = await api.get("/recipes");
+
+        setRecipes(response.data.slice(0, 3));
+      } catch (error) {
+        console.error("Erro ao requisitar as receitas", error);
+        toast.error("Erro ao requisitar as receitas, tente novamente mais tarde")
+      }
+    };
+
+    fetchRecipes();
+  }, []);
 
   return (
     <main className="flex-grow">
@@ -26,8 +46,8 @@ export default function Home() {
         <div className="flex flex-col items-center container mx-auto gap-8">
           <h2 className="text-lg font-bold">Receitas em destaque</h2>
 
-          <div className="flex w-full gap-8">
-            {featuredRecipes.map((recipe) => (
+          <div className="grid grid-cols-3 w-full gap-8">
+            {recipes.map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe}/>
             ))}
           </div>
